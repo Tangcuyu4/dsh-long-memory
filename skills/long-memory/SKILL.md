@@ -1,6 +1,6 @@
 ---
 name: long-memory
-description: 超长记忆包工作流：跨会话记忆存取与修正、长文档切块检索、聊天记录提取与精炼存档。用户说「记住/回忆上次/之前说过」、要求长文查找或聊天总结时使用。
+description: 超长记忆包工作流：跨会话记忆存取与修正、长文档切块检索、聊天记录提取与精炼存档、上下文总结记录与翻阅。用户说「记住/回忆上次/之前说过」、要求长文查找、聊天总结或上下文接续时使用。
 ---
 
 # 超长记忆包（dsh-long-memory）工作流
@@ -17,6 +17,7 @@ description: 超长记忆包工作流：跨会话记忆存取与修正、长文�
 | 重要结论、决定、教训 | `memory_store`（decision/lesson，importance≥4） |
 | 长文件/大材料要查 | `doc_ingest` → `doc_search` → `doc_read`（引用带 doc_id+行号） |
 | 聊天记录提取/总结/存档 | `chat_list` → `chat_extract`（可 ingest=true）→ `chat_digest` → 人工精炼后 `memory_store` |
+| 一大段活儿干到关键节点/上下文快撑不住/换会话接手 | 写好总结 `summary_save`（带轮次范围）；翻旧账 `summary_list` → `summary_read` |
 | 盘点/清理记忆 | `memory_list` / `memory_stats` / `memory_forget` |
 
 ## 记忆写入规范
@@ -47,6 +48,17 @@ description: 超长记忆包工作流：跨会话记忆存取与修正、长文�
 3. `chat_digest { session, store: true }`：确定性骨架（逐轮主旨、文件、命令、URL、结论信号句）。
 4. **语义精炼由你完成**：在骨架上提炼 3~7 条结构化记忆（决定/事实/偏好/遗留 TODO），
    逐条 `memory_store`，tags 带 `session:<id>` 和 `digest`。骨架里的原文别照搬，去水提炼。
+
+## 上下文总结（记录 + 翻阅）
+
+1. **什么时候记**：一大段活儿干到关键节点、上下文快撑不住、或换会话接手前，把进展写成总结 `summary_save`
+   （带 `session`、`from_turn`、`to_turn`、`title`）。
+2. **总结写法**：自包含——干了啥、结论/决定是啥、遗留待办是啥、关键文件/命令；正文分行写要点，
+   将来只看这条就能接上上下文。
+3. **翻阅**：`summary_list`（可按 session/query 过滤）看账本 → `summary_read { id }` 读全文。
+   最新的总结会自动注入提示词块（`summaryInject` 可关），换会话/压缩后照样接得上。
+4. 总结同时是 digest 记忆（tag `ctx-summary`），`memory_search` 也能搜到；不给正文时工具会按
+   会话轮次自动生成确定性骨架兜底。
 
 ## 维护
 

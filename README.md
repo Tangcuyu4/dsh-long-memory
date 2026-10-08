@@ -1,6 +1,6 @@
 # dsh-long-memory 超长记忆包
 
-给 DSH（DeepSeek Harness）装的插件：**跨会话长期记忆 + 长文查找 + 聊天记录提取与精炼**。
+给 DSH（DeepSeek Harness）装的插件：**跨会话长期记忆 + 长文查找 + 聊天记录提取与精炼 + 上下文总结记录与翻阅**。
 纯 JS（BM25 + 中文二元分词混合检索），零第三方依赖，数据全部落本机。
 
 ## 能力
@@ -16,9 +16,13 @@
   - 读 DSH 会话投影缓存，逐轮取「用户提问 + 助手回复」，可按轮区间截取
   - `chat_digest` 产出确定性骨架（逐轮主旨、文件、命令、URL、结论信号句），
     语义级精炼由模型在骨架上完成后再 `memory_store` 入库
+- **上下文总结（记录 + 翻阅）**：`summary_save / summary_list / summary_read`
+  - 一大段活儿的进展总结带会话与轮次范围存档；最新总结自动注入提示词块，压缩/换会话后照样接得上
+  - 账本可按会话/关键词翻阅；总结同时是 digest 记忆，`memory_search` 也能搜到
+  - 不给正文时按会话轮次自动生成确定性骨架兜底
 - **系统提示词注入 + Skill**：教 agent 何时存、何时查、怎么引用；`long-memory` skill 可手动/自动调用
 
-## 工具一览（14 个）
+## 工具一览（17 个）
 
 | 工具 | 作用 |
 | --- | --- |
@@ -29,6 +33,7 @@
 | doc_ingest | 长文件/文本切块建索引 |
 | doc_search / doc_read / doc_list | 块级检索 / 按块或行读原文 / 列出文档 |
 | chat_list / chat_extract / chat_digest | 列会话 / 提取逐轮原文 / 精炼骨架（可入库） |
+| summary_save / summary_list / summary_read | 上下文总结存档 / 翻账本 / 读全文 |
 
 ## 安装（本机 desktop 版）
 
